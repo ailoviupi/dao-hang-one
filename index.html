@@ -63,6 +63,54 @@
                 </div>
             </div>
 
+            <!-- 收藏地点 -->
+            <div class="favorites">
+                <h3>收藏地点</h3>
+                <div class="favorites-list" id="favoritesList">
+                    <div class="favorite-item" data-lat="39.9042" data-lon="116.4074">
+                        <span class="favorite-icon">🏠</span>
+                        <span class="favorite-name">家</span>
+                        <button class="navigate-btn">导航</button>
+                    </div>
+                    <div class="favorite-item" data-lat="31.2304" data-lon="121.4737">
+                        <span class="favorite-icon">🏢</span>
+                        <span class="favorite-name">公司</span>
+                        <button class="navigate-btn">导航</button>
+                    </div>
+                </div>
+                <button class="add-favorite-btn" id="addFavoriteBtn">添加收藏</button>
+            </div>
+
+            <!-- 驾驶统计 -->
+            <div class="stats-container">
+                <h3>驾驶统计</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalDistance">0</div>
+                        <div class="stat-label">总里程 (km)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="avgSpeed">0</div>
+                        <div class="stat-label">平均车速 (km/h)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="drivingTime">0</div>
+                        <div class="stat-label">驾驶时间 (h)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 主题切换 -->
+            <div class="theme-selector">
+                <h3>主题选择</h3>
+                <div class="theme-buttons">
+                    <button class="theme-btn active" data-theme="default">默认</button>
+                    <button class="theme-btn" data-theme="car">汽车</button>
+                    <button class="theme-btn" data-theme="nature">自然</button>
+                    <button class="theme-btn" data-theme="cyber">赛博</button>
+                </div>
+            </div>
+
             <!-- 导航控制 -->
             <div class="nav-controls">
                 <button class="control-btn start-btn">开始导航</button>

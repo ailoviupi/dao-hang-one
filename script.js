@@ -2,6 +2,17 @@
 let watchID = null;
 let currentSpeed = 0;
 let isNavigating = false;
+let favorites = [];
+
+// 驾驶统计数据
+let drivingStats = {
+    totalDistance: 0,
+    avgSpeed: 0,
+    drivingTime: 0,
+    maxSpeed: 0,
+    startTime: null,
+    lastPosition: null
+};
 
 // 页面加载完成后初始化
 window.addEventListener('DOMContentLoaded', () => {
@@ -14,6 +25,12 @@ window.addEventListener('DOMContentLoaded', () => {
     // 绑定按钮事件
     document.querySelector('.start-btn').addEventListener('click', toggleNavigation);
     document.querySelector('.settings-btn').addEventListener('click', openSettings);
+    
+    // 初始化收藏地点
+    initFavorites();
+    
+    // 初始化主题
+    initTheme();
 });
 
 // 更新时间
@@ -88,6 +105,72 @@ function calculateSpeed(position) {
     const speed = position.coords.speed || 0;
     currentSpeed = Math.round(speed * 3.6); // 转换为 km/h
     updateSpeedDisplay();
+    
+    // 更新驾驶统计
+    updateDrivingStats(position);
+}
+
+// 更新驾驶统计
+function updateDrivingStats(position) {
+    if (!drivingStats.startTime) return;
+    
+    // 计算距离
+    if (drivingStats.lastPosition) {
+        const distance = getDistanceFromLatLonInKm(
+            drivingStats.lastPosition.lat,
+            drivingStats.lastPosition.lon,
+            position.coords.latitude,
+            position.coords.longitude
+        );
+        drivingStats.totalDistance += distance;
+    }
+    
+    drivingStats.lastPosition = {
+        lat: position.coords.latitude,
+        lon: position.coords.longitude
+    };
+    
+    // 计算驾驶时间
+    const currentTime = new Date();
+    drivingStats.drivingTime = (currentTime - drivingStats.startTime) / 3600000; // 转换为小时
+    
+    // 更新平均车速
+    if (drivingStats.drivingTime > 0) {
+        drivingStats.avgSpeed = drivingStats.totalDistance / drivingStats.drivingTime;
+    }
+    
+    // 更新最大车速
+    if (currentSpeed > drivingStats.maxSpeed) {
+        drivingStats.maxSpeed = currentSpeed;
+    }
+    
+    // 更新UI
+    updateStatsUI();
+}
+
+// 计算两点之间的距离 (km)
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+    const R = 6371; // 地球半径 (km)
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const d = R * c; // 距离 (km)
+    return d;
+}
+
+function deg2rad(deg) {
+    return deg * (Math.PI/180);
+}
+
+// 更新统计UI
+function updateStatsUI() {
+    document.getElementById('totalDistance').textContent = drivingStats.totalDistance.toFixed(1);
+    document.getElementById('avgSpeed').textContent = Math.round(drivingStats.avgSpeed);
+    document.getElementById('drivingTime').textContent = drivingStats.drivingTime.toFixed(1);
 }
 
 // 更新车速显示
@@ -126,6 +209,11 @@ function toggleNavigation() {
 function startNavigation() {
     startWatchingLocation();
     updateTrafficInfo();
+    
+    // 初始化驾驶统计
+    drivingStats.startTime = new Date();
+    drivingStats.lastPosition = null;
+    
     showMessage('导航已开始');
 }
 
@@ -185,6 +273,130 @@ function showMessage(message) {
 // 显示错误
 function showError(error) {
     showMessage(`错误: ${error}`);
+}
+
+// 收藏地点功能
+function initFavorites() {
+    // 从本地存储加载收藏地点
+    const savedFavorites = localStorage.getItem('favorites');
+    if (savedFavorites) {
+        favorites = JSON.parse(savedFavorites);
+    } else {
+        // 默认收藏地点
+        favorites = [
+            { name: '家', lat: 39.9042, lon: 116.4074, icon: '🏠' },
+            { name: '公司', lat: 31.2304, lon: 121.4737, icon: '🏢' }
+        ];
+        saveFavorites();
+    }
+    
+    // 绑定添加收藏按钮事件
+    document.getElementById('addFavoriteBtn').addEventListener('click', addFavorite);
+    
+    // 渲染收藏地点
+    renderFavorites();
+}
+
+function renderFavorites() {
+    const favoritesList = document.getElementById('favoritesList');
+    favoritesList.innerHTML = '';
+    
+    favorites.forEach((favorite, index) => {
+        const item = document.createElement('div');
+        item.className = 'favorite-item';
+        item.dataset.lat = favorite.lat;
+        item.dataset.lon = favorite.lon;
+        item.innerHTML = `
+            <span class="favorite-icon">${favorite.icon}</span>
+            <span class="favorite-name">${favorite.name}</span>
+            <button class="navigate-btn" onclick="navigateToFavorite(${index})">导航</button>
+        `;
+        favoritesList.appendChild(item);
+    });
+}
+
+function navigateToFavorite(index) {
+    const favorite = favorites[index];
+    showMessage(`开始导航到: ${favorite.name}`);
+    // 这里可以添加导航逻辑
+}
+
+function addFavorite() {
+    const name = prompt('请输入地点名称:');
+    if (!name) return;
+    
+    // 使用当前位置作为默认坐标
+    navigator.geolocation.getCurrentPosition(
+        position => {
+            const newFavorite = {
+                name: name,
+                lat: position.coords.latitude,
+                lon: position.coords.longitude,
+                icon: '📍'
+            };
+            
+            favorites.push(newFavorite);
+            saveFavorites();
+            renderFavorites();
+            showMessage(`已添加收藏地点: ${name}`);
+        },
+        error => {
+            // 如果无法获取位置，使用默认坐标
+            const newFavorite = {
+                name: name,
+                lat: 39.9042,
+                lon: 116.4074,
+                icon: '📍'
+            };
+            
+            favorites.push(newFavorite);
+            saveFavorites();
+            renderFavorites();
+            showMessage(`已添加收藏地点: ${name}`);
+        }
+    );
+}
+
+function saveFavorites() {
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+}
+
+// 主题切换功能
+function initTheme() {
+    // 从本地存储加载主题
+    const savedTheme = localStorage.getItem('theme') || 'default';
+    setTheme(savedTheme);
+    
+    // 绑定主题按钮事件
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const theme = btn.dataset.theme;
+            setTheme(theme);
+        });
+    });
+}
+
+function setTheme(theme) {
+    // 移除所有主题类
+    document.body.className = '';
+    
+    // 添加当前主题类
+    if (theme !== 'default') {
+        document.body.classList.add(`theme-${theme}`);
+    }
+    
+    // 更新按钮状态
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.theme === theme) {
+            btn.classList.add('active');
+        }
+    });
+    
+    // 保存到本地存储
+    localStorage.setItem('theme', theme);
+    
+    showMessage(`已切换到${theme}主题`);
 }
 
 // 页面隐藏时停止定位

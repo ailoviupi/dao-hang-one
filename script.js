@@ -273,6 +273,7 @@ function toggleNavigation() {
 function startNavigation() {
     startWatchingLocation();
     updateTrafficInfo();
+    trafficUpdateInterval = setInterval(updateTrafficInfo, 10000); // 每10秒自动更新交通信息
     
     // 初始化驾驶统计
     drivingStats.startTime = new Date();
@@ -287,6 +288,8 @@ function startNavigation() {
 // 全局变量用于跟踪定时器
 let simulateSpeedInterval = null;
 let roadSpeedUpdateInterval = null;
+let trafficUpdateInterval = null;
+let timeUpdateInterval = null;
 
 // 停止导航
 function stopNavigation() {
@@ -812,51 +815,38 @@ document.addEventListener('touchend', (e) => {
         // 水平滑动
         if (deltaX > 50) {
             // 向右滑动 - 返回上一页
-            showMessage('向右滑动手势');
         } else if (deltaX < -50) {
             // 向左滑动 - 前进
-            showMessage('向左滑动手势');
         }
     } else {
         // 垂直滑动
         if (deltaY > 50) {
             // 向下滑动 - 滚动到顶部
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            showMessage('向下滑动手势 - 滚动到顶部');
         } else if (deltaY < -50) {
             // 向上滑动 - 滚动到底部
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            showMessage('向上滑动手势 - 滚动到底部');
         }
     }
 });
 
-// 鼠标滚轮事件 - 减少提示频率
+// 鼠标滚轮事件 - 移除频繁提示
 let lastWheelTime = 0;
 document.addEventListener('wheel', (e) => {
     const now = Date.now();
-    if (now - lastWheelTime > 2000) {
-        if (e.deltaY > 0) {
-            // 向下滚动
-            showMessage('向下滚动');
-        } else {
-            // 向上滚动
-            showMessage('向上滚动');
-        }
-        lastWheelTime = now;
-    }
+    lastWheelTime = now;
 });
 
 // 双击手势
 document.addEventListener('dblclick', (e) => {
-    showMessage('双击手势 - 快速导航');
+    // 快速导航逻辑保留，移除提示
 });
 
 // 长按手势
 let longPressTimer = null;
 document.addEventListener('mousedown', (e) => {
     longPressTimer = setTimeout(() => {
-        showMessage('长按手势 - 收藏地点');
+        // 收藏地点逻辑保留，移除提示
     }, 1000);
 });
 

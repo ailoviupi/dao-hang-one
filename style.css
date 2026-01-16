@@ -165,11 +165,12 @@ body {
 
 .road-speed {
     font-size: 16px;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.8);
     padding: 8px 15px;
     border-radius: 10px;
     color: white;
     font-weight: 600;
+    margin-bottom: 8px;
 }
 
 .speed-label {
@@ -377,6 +378,25 @@ body {
     .control-btn {
         padding: 15px;
         font-size: 14px;
+    }
+    
+    /* 移动端地图信息 */
+    .road-speed,
+    .road-limit,
+    .current-location {
+        font-size: 12px;
+        padding: 6px 12px;
+        margin-bottom: 6px;
+    }
+    
+    .speed-value,
+    .limit-value {
+        font-size: 16px;
+    }
+    
+    .speed-unit,
+    .limit-unit {
+        font-size: 10px;
     }
     
     /* 移动端地图切换器 */

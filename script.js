@@ -80,14 +80,24 @@ function getCurrentLocation() {
 
 // 开始位置监听
 function startWatchingLocation() {
-    if (!navigator.geolocation) return;
+    if (!navigator.geolocation) {
+        // 如果浏览器不支持地理定位，使用模拟数据
+        showMessage('浏览器不支持地理定位，使用模拟数据');
+        simulateSpeedInterval = setInterval(simulateSpeedUpdate, 1000);
+        return;
+    }
 
     watchID = navigator.geolocation.watchPosition(
         position => {
             updateLocation(position);
             calculateSpeed(position);
         },
-        error => handleLocationError(error),
+        error => {
+            handleLocationError(error);
+            // 如果定位失败，使用模拟数据
+            showMessage('定位失败，使用模拟数据');
+            simulateSpeedInterval = setInterval(simulateSpeedUpdate, 1000);
+        },
         {
             enableHighAccuracy: true,
             maximumAge: 0,
@@ -132,6 +142,26 @@ function calculateSpeed(position) {
     
     // 更新驾驶统计
     updateDrivingStats(position);
+}
+
+// 模拟车速更新（用于测试）
+function simulateSpeedUpdate() {
+    if (isNavigating) {
+        // 模拟随机车速变化
+        const speeds = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+        currentSpeed = speeds[Math.floor(Math.random() * speeds.length)];
+        updateSpeedDisplay();
+        
+        // 模拟位置更新
+        const mockPosition = {
+            coords: {
+                latitude: 39.9042 + Math.random() * 0.01,
+                longitude: 116.4074 + Math.random() * 0.01,
+                speed: currentSpeed / 3.6 // 转换为 m/s
+            }
+        };
+        updateDrivingStats(mockPosition);
+    }
 }
 
 // 更新驾驶统计
@@ -247,11 +277,45 @@ function startNavigation() {
     showMessage('导航已开始');
 }
 
+// 全局变量用于跟踪定时器
+let simulateSpeedInterval = null;
+let roadSpeedUpdateInterval = null;
+
 // 停止导航
 function stopNavigation() {
     stopWatchingLocation();
+    
+    // 清除所有导航相关定时器
+    if (simulateSpeedInterval) {
+        clearInterval(simulateSpeedInterval);
+        simulateSpeedInterval = null;
+    }
+    
+    if (roadSpeedUpdateInterval) {
+        clearInterval(roadSpeedUpdateInterval);
+        roadSpeedUpdateInterval = null;
+    }
+    
+    // 重置驾驶统计数据
+    drivingStats = {
+        totalDistance: 0,
+        avgSpeed: 0,
+        drivingTime: 0,
+        maxSpeed: 0,
+        startTime: null,
+        lastPosition: null
+    };
+    
+    // 重置当前速度和路段速度
     currentSpeed = 0;
+    roadSpeed = {
+        current: 0,
+        limit: 60,
+        traffic: 'normal'
+    };
+    
     updateSpeedDisplay();
+    updateStatsUI();
     showMessage('导航已停止');
 }
 
@@ -673,7 +737,7 @@ function updateRoadSpeed() {
 // 定期更新路段速度
 function startRoadSpeedUpdate() {
     updateRoadSpeed();
-    setInterval(updateRoadSpeed, 5000); // 每5秒更新一次
+    roadSpeedUpdateInterval = setInterval(updateRoadSpeed, 5000); // 每5秒更新一次
 }
 
 // 预加载地图

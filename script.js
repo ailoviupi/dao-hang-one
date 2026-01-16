@@ -42,6 +42,9 @@ window.addEventListener('DOMContentLoaded', () => {
     
     // 初始化成就系统
     initAchievements();
+    
+    // 初始化离线地图
+    initOfflineMap();
 });
 
 // 更新时间
@@ -477,6 +480,61 @@ function unlockAchievement(achievementId) {
 
 function saveAchievements() {
     localStorage.setItem('achievements', JSON.stringify(achievements));
+}
+
+// 离线地图功能
+function initOfflineMap() {
+    // 检查网络连接
+    checkNetworkStatus();
+    
+    // 监听网络变化
+    window.addEventListener('online', updateNetworkStatus);
+    window.addEventListener('offline', updateNetworkStatus);
+    
+    // 绑定缓存按钮事件
+    document.getElementById('cacheMapBtn').addEventListener('click', cacheMap);
+    
+    // 更新缓存状态
+    updateCacheStatus();
+}
+
+function checkNetworkStatus() {
+    const isOnline = navigator.onLine;
+    updateNetworkStatus(isOnline);
+}
+
+function updateNetworkStatus(isOnline) {
+    const statusElement = document.getElementById('networkStatus');
+    
+    if (typeof isOnline === 'boolean') {
+        statusElement.textContent = `网络连接: ${isOnline ? '在线' : '离线'}`;
+    } else {
+        statusElement.textContent = `网络连接: ${navigator.onLine ? '在线' : '离线'}`;
+    }
+}
+
+function updateCacheStatus() {
+    // 模拟缓存状态
+    const cacheSize = localStorage.getItem('mapCacheSize') || 0;
+    document.getElementById('mapCache').textContent = `地图缓存: ${cacheSize}MB`;
+}
+
+function cacheMap() {
+    if (!navigator.onLine) {
+        showMessage('离线状态下无法缓存地图');
+        return;
+    }
+    
+    // 模拟缓存地图
+    showMessage('开始缓存地图...');
+    
+    // 模拟缓存过程
+    setTimeout(() => {
+        const cacheSize = Math.floor(Math.random() * 100) + 50; // 50-150MB
+        localStorage.setItem('mapCacheSize', cacheSize);
+        updateCacheStatus();
+        showMessage(`地图缓存完成，大小: ${cacheSize}MB`);
+    }, 2000);
 }
 
 // 手势操作

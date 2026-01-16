@@ -138,6 +138,22 @@
                 </div>
             </div>
 
+            <!-- 离线地图 -->
+            <div class="offline-map">
+                <h3>离线地图</h3>
+                <div class="offline-status">
+                    <div class="status-item">
+                        <span class="status-icon">📡</span>
+                        <span class="status-text" id="networkStatus">网络连接: 在线</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-icon">💾</span>
+                        <span class="status-text" id="mapCache">地图缓存: 0MB</span>
+                    </div>
+                </div>
+                <button class="control-btn cache-btn" id="cacheMapBtn">缓存当前地图</button>
+            </div>
+
             <!-- 导航控制 -->
             <div class="nav-controls">
                 <button class="control-btn start-btn">开始导航</button>

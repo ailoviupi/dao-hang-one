@@ -13,6 +13,7 @@ body {
     touch-action: manipulation;
     overscroll-behavior: contain;
     scroll-snap-type: y proximity;
+    scroll-behavior: smooth;
 }
 
 body {

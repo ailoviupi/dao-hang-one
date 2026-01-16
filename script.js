@@ -815,14 +815,18 @@ document.addEventListener('touchend', (e) => {
         // 水平滑动
         if (deltaX > 30) {
             // 向右滑动 - 返回上一页
+            window.history.back();
+            showGestureHint('向右滑动: 返回上一页');
         } else if (deltaX < -30) {
             // 向左滑动 - 前进
+            window.history.forward();
+            showGestureHint('向左滑动: 前进到下一页');
         }
     } else {
         // 垂直滑动
         if (Math.abs(deltaY) > 30) {
             // 根据滑动方向和距离计算滚动目标位置
-            const scrollDistance = deltaY * 2.5;
+            const scrollDistance = deltaY * 2;
             const targetPosition = window.scrollY - scrollDistance;
             
             // 确保滚动位置在有效范围内

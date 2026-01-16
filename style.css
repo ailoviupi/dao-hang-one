@@ -11,6 +11,7 @@ body {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     touch-action: manipulation;
+    overscroll-behavior: contain;
 }
 
 body {

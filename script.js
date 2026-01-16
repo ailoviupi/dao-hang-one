@@ -820,12 +820,17 @@ document.addEventListener('touchend', (e) => {
         }
     } else {
         // 垂直滑动
-        if (deltaY > 30) {
-            // 向下滑动 - 滚动到顶部
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else if (deltaY < -30) {
-            // 向上滑动 - 滚动到底部
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        if (Math.abs(deltaY) > 30) {
+            // 根据滑动方向和距离计算滚动目标位置
+            const scrollDistance = deltaY * 3;
+            const targetPosition = window.scrollY - scrollDistance;
+            
+            // 确保滚动位置在有效范围内
+            const maxScroll = document.body.scrollHeight - window.innerHeight;
+            const finalPosition = Math.max(0, Math.min(targetPosition, maxScroll));
+            
+            // 平滑滚动到目标位置
+            window.scrollTo({ top: finalPosition, behavior: 'smooth' });
         }
     }
 });

@@ -14,6 +14,14 @@ let drivingStats = {
     lastPosition: null
 };
 
+// 成就系统数据
+let achievements = {
+    firstDrive: { unlocked: false, description: '完成首次驾驶' },
+    speedDemon: { unlocked: false, description: '时速超过100km/h' },
+    longDrive: { unlocked: false, description: '行驶超过100km' },
+    safeDriver: { unlocked: false, description: '连续驾驶1小时无超速' }
+};
+
 // 页面加载完成后初始化
 window.addEventListener('DOMContentLoaded', () => {
     updateTime();
@@ -31,6 +39,9 @@ window.addEventListener('DOMContentLoaded', () => {
     
     // 初始化主题
     initTheme();
+    
+    // 初始化成就系统
+    initAchievements();
 });
 
 // 更新时间
@@ -146,6 +157,9 @@ function updateDrivingStats(position) {
     
     // 更新UI
     updateStatsUI();
+    
+    // 检查成就
+    checkAchievements();
 }
 
 // 计算两点之间的距离 (km)
@@ -398,6 +412,129 @@ function setTheme(theme) {
     
     showMessage(`已切换到${theme}主题`);
 }
+
+// 成就系统功能
+function initAchievements() {
+    // 从本地存储加载成就数据
+    const savedAchievements = localStorage.getItem('achievements');
+    if (savedAchievements) {
+        achievements = JSON.parse(savedAchievements);
+    }
+    
+    // 渲染成就
+    renderAchievements();
+}
+
+function renderAchievements() {
+    const achievementsGrid = document.querySelector('.achievements-grid');
+    
+    Object.keys(achievements).forEach(achievementId => {
+        const achievement = achievements[achievementId];
+        const item = document.querySelector(`[data-achievement="${achievementId}"]`);
+        
+        if (item) {
+            if (achievement.unlocked) {
+                item.classList.add('unlocked');
+                item.querySelector('.achievement-status').textContent = '✅';
+            } else {
+                item.classList.remove('unlocked');
+                item.querySelector('.achievement-status').textContent = '🔒';
+            }
+        }
+    });
+}
+
+function checkAchievements() {
+    // 检查首次驾驶成就
+    if (!achievements.firstDrive.unlocked && drivingStats.drivingTime > 0.01) {
+        unlockAchievement('firstDrive');
+    }
+    
+    // 检查速度达人成就
+    if (!achievements.speedDemon.unlocked && drivingStats.maxSpeed >= 100) {
+        unlockAchievement('speedDemon');
+    }
+    
+    // 检查长途旅行成就
+    if (!achievements.longDrive.unlocked && drivingStats.totalDistance >= 100) {
+        unlockAchievement('longDrive');
+    }
+    
+    // 检查安全驾驶成就
+    if (!achievements.safeDriver.unlocked && drivingStats.drivingTime >= 1) {
+        unlockAchievement('safeDriver');
+    }
+}
+
+function unlockAchievement(achievementId) {
+    if (!achievements[achievementId].unlocked) {
+        achievements[achievementId].unlocked = true;
+        saveAchievements();
+        renderAchievements();
+        showMessage(`🎉 解锁成就: ${achievements[achievementId].description}`);
+    }
+}
+
+function saveAchievements() {
+    localStorage.setItem('achievements', JSON.stringify(achievements));
+}
+
+// 手势操作
+let touchStartX = 0;
+let touchStartY = 0;
+
+// 触摸开始
+document.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+});
+
+// 触摸结束
+document.addEventListener('touchend', (e) => {
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+    
+    // 检测滑动手势
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // 水平滑动
+        if (deltaX > 50) {
+            // 向右滑动 - 返回上一页
+            showMessage('向右滑动手势');
+        } else if (deltaX < -50) {
+            // 向左滑动 - 前进
+            showMessage('向左滑动手势');
+        }
+    } else {
+        // 垂直滑动
+        if (deltaY > 50) {
+            // 向下滑动 - 显示更多信息
+            showMessage('向下滑动手势');
+        } else if (deltaY < -50) {
+            // 向上滑动 - 隐藏信息
+            showMessage('向上滑动手势');
+        }
+    }
+});
+
+// 双击手势
+document.addEventListener('dblclick', (e) => {
+    showMessage('双击手势 - 快速导航');
+});
+
+// 长按手势
+let longPressTimer = null;
+document.addEventListener('mousedown', (e) => {
+    longPressTimer = setTimeout(() => {
+        showMessage('长按手势 - 收藏地点');
+    }, 1000);
+});
+
+document.addEventListener('mouseup', (e) => {
+    clearTimeout(longPressTimer);
+});
 
 // 页面隐藏时停止定位
 document.addEventListener('visibilitychange', () => {

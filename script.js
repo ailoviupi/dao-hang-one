@@ -558,6 +558,9 @@ function initMapSystem() {
     
     // 模拟地图加载
     simulateMapLoad();
+    
+    // 检查地图可用性
+    checkMapAvailability();
 }
 
 function setMap(mapType) {
@@ -575,10 +578,16 @@ function setMap(mapType) {
     const mapImage = document.getElementById('mapImage');
     mapImage.className = `map-image ${mapType}`;
     
+    // 如果是高德地图，打开新窗口
+    if (mapType === 'amap') {
+        window.open('https://www.amap.com/', '_blank');
+        showMessage('已打开高德地图');
+    } else {
+        showMessage(`已切换到${mapType}地图`);
+    }
+    
     // 保存到本地存储
     localStorage.setItem('currentMap', mapType);
-    
-    showMessage(`已切换到${mapType}地图`);
 }
 
 // 模拟地图加载完成
@@ -586,6 +595,17 @@ function simulateMapLoad() {
     setTimeout(() => {
         showMessage('地图加载完成');
     }, 1500);
+}
+
+// 检查地图可用性
+function checkMapAvailability() {
+    // 模拟检查地图服务
+    setTimeout(() => {
+        const isAvailable = Math.random() > 0.3; // 70%可用
+        if (!isAvailable) {
+            showMessage('当前地图服务不可用，建议切换到高德地图');
+        }
+    }, 2000);
 }
 
 // 手势操作

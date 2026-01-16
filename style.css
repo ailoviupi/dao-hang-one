@@ -119,6 +119,10 @@ body {
     background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
 }
 
+.map-image.amap {
+    background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
+}
+
 /* 地图覆盖层 */
 .map-overlay {
     position: absolute;

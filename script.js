@@ -14,6 +14,13 @@ let drivingStats = {
     lastPosition: null
 };
 
+// 路段速度信息
+let roadSpeed = {
+    current: 0,
+    limit: 60,
+    traffic: 'normal'
+};
+
 // 成就系统数据
 let achievements = {
     firstDrive: { unlocked: false, description: '完成首次驾驶' },
@@ -233,6 +240,9 @@ function startNavigation() {
     // 初始化驾驶统计
     drivingStats.startTime = new Date();
     drivingStats.lastPosition = null;
+    
+    // 开始更新路段速度
+    startRoadSpeedUpdate();
     
     showMessage('导航已开始');
 }
@@ -593,6 +603,9 @@ function initMapSystem() {
     
     // 预加载地图
     preloadMaps();
+    
+    // 开始更新路段速度
+    startRoadSpeedUpdate();
 }
 
 function setMap(mapType) {
@@ -632,6 +645,38 @@ function simulateMapLoad() {
     setTimeout(() => {
         showMessage('地图加载完成');
     }, 1500);
+}
+
+// 更新路段速度
+function updateRoadSpeed() {
+    // 模拟获取路段速度
+    const speeds = [30, 40, 50, 60, 70, 80, 90, 100];
+    roadSpeed.current = speeds[Math.floor(Math.random() * speeds.length)];
+    roadSpeed.limit = 60 + Math.floor(Math.random() * 40);
+    roadSpeed.traffic = ['normal', 'slow', 'heavy', 'jam'][Math.floor(Math.random() * 4)];
+    
+    // 更新UI
+    const roadSpeedValue = document.getElementById('roadSpeedValue');
+    if (roadSpeedValue) {
+        roadSpeedValue.textContent = roadSpeed.current;
+        
+        // 根据交通状况改变颜色
+        if (roadSpeed.traffic === 'jam') {
+            roadSpeedValue.style.color = '#ff6b6b';
+        } else if (roadSpeed.traffic === 'heavy') {
+            roadSpeedValue.style.color = '#ffd93d';
+        } else if (roadSpeed.traffic === 'slow') {
+            roadSpeedValue.style.color = '#6bcf7f';
+        } else {
+            roadSpeedValue.style.color = '#667eea';
+        }
+    }
+}
+
+// 定期更新路段速度
+function startRoadSpeedUpdate() {
+    updateRoadSpeed();
+    setInterval(updateRoadSpeed, 5000); // 每5秒更新一次
 }
 
 // 预加载地图

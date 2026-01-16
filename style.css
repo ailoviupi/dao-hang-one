@@ -67,6 +67,21 @@ body {
     flex-wrap: wrap;
 }
 
+/* 移动端适配 */
+@media (max-width: 480px) {
+    .map-switcher {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        gap: 5px;
+    }
+    
+    .map-btn {
+        padding: 8px 12px;
+        font-size: 10px;
+    }
+}
+
 .map-btn {
     background: rgba(0, 0, 0, 0.6);
     color: white;
@@ -291,6 +306,73 @@ body {
     .control-btn {
         padding: 15px;
         font-size: 14px;
+    }
+    
+    /* 移动端地图切换器 */
+    .map-switcher {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        gap: 5px;
+    }
+    
+    .map-btn {
+        padding: 8px 12px;
+        font-size: 10px;
+    }
+    
+    /* 移动端地图内容 */
+    .map-content {
+        height: 300px;
+    }
+    
+    /* 移动端统计网格 */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    /* 移动端成就网格 */
+    .achievements-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    /* 移动端主题按钮 */
+    .theme-buttons {
+        gap: 5px;
+    }
+    
+    .theme-btn {
+        padding: 8px 15px;
+        font-size: 12px;
+    }
+    
+    /* 移动端收藏地点 */
+    .favorite-item {
+        padding: 12px;
+    }
+    
+    .favorite-name {
+        font-size: 14px;
+    }
+    
+    .navigate-btn {
+        padding: 6px 12px;
+        font-size: 10px;
+    }
+    
+    /* 移动端离线地图 */
+    .offline-map {
+        padding: 15px;
+    }
+    
+    .status-item {
+        padding: 12px;
+    }
+    
+    .status-text {
+        font-size: 12px;
     }
 }
 

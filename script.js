@@ -813,17 +813,17 @@ document.addEventListener('touchend', (e) => {
     // 检测滑动手势
     if (Math.abs(deltaX) > Math.abs(deltaY)) {
         // 水平滑动
-        if (deltaX > 50) {
+        if (deltaX > 30) {
             // 向右滑动 - 返回上一页
-        } else if (deltaX < -50) {
+        } else if (deltaX < -30) {
             // 向左滑动 - 前进
         }
     } else {
         // 垂直滑动
-        if (deltaY > 50) {
+        if (deltaY > 30) {
             // 向下滑动 - 滚动到顶部
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else if (deltaY < -50) {
+        } else if (deltaY < -30) {
             // 向上滑动 - 滚动到底部
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         }

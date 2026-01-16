@@ -603,9 +603,6 @@ function initMapSystem() {
     
     // 预加载地图
     preloadMaps();
-    
-    // 开始更新路段速度
-    startRoadSpeedUpdate();
 }
 
 function setMap(mapType) {
@@ -662,13 +659,13 @@ function updateRoadSpeed() {
         
         // 根据交通状况改变颜色
         if (roadSpeed.traffic === 'jam') {
-            roadSpeedValue.style.color = '#ff6b6b';
+            roadSpeedValue.style.color = '#ff6b6b'; // 红色 - 严重拥堵
         } else if (roadSpeed.traffic === 'heavy') {
-            roadSpeedValue.style.color = '#ffd93d';
+            roadSpeedValue.style.color = '#ffd93d'; // 黄色 - 拥堵
         } else if (roadSpeed.traffic === 'slow') {
-            roadSpeedValue.style.color = '#6bcf7f';
+            roadSpeedValue.style.color = '#6bcf7f'; // 绿色 - 缓慢
         } else {
-            roadSpeedValue.style.color = '#667eea';
+            roadSpeedValue.style.color = '#667eea'; // 紫色 - 正常
         }
     }
 }
@@ -682,10 +679,14 @@ function startRoadSpeedUpdate() {
 // 预加载地图
 function preloadMaps() {
     const mapTypes = ['default', 'satellite', 'traffic', 'terrain'];
-    mapTypes.forEach(mapType => {
-        const img = new Image();
-        img.src = `https://picsum.photos/1920/1080?${mapType}`;
-    });
+    
+    // 延迟加载，避免阻塞主线程
+    setTimeout(() => {
+        mapTypes.forEach(mapType => {
+            const img = new Image();
+            img.src = `https://picsum.photos/1920/1080?${mapType}`;
+        });
+    }, 1000);
 }
 
 // 检查地图可用性
@@ -741,14 +742,19 @@ document.addEventListener('touchend', (e) => {
     }
 });
 
-// 鼠标滚轮事件
+// 鼠标滚轮事件 - 减少提示频率
+let lastWheelTime = 0;
 document.addEventListener('wheel', (e) => {
-    if (e.deltaY > 0) {
-        // 向下滚动
-        showMessage('向下滚动');
-    } else {
-        // 向上滚动
-        showMessage('向上滚动');
+    const now = Date.now();
+    if (now - lastWheelTime > 2000) {
+        if (e.deltaY > 0) {
+            // 向下滚动
+            showMessage('向下滚动');
+        } else {
+            // 向上滚动
+            showMessage('向上滚动');
+        }
+        lastWheelTime = now;
     }
 });
 

@@ -12,6 +12,7 @@ body {
     -webkit-overflow-scrolling: touch;
     touch-action: manipulation;
     overscroll-behavior: contain;
+    scroll-snap-type: y proximity;
 }
 
 body {

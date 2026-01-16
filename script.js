@@ -822,7 +822,7 @@ document.addEventListener('touchend', (e) => {
         // 垂直滑动
         if (Math.abs(deltaY) > 30) {
             // 根据滑动方向和距离计算滚动目标位置
-            const scrollDistance = deltaY * 3;
+            const scrollDistance = deltaY * 2.5;
             const targetPosition = window.scrollY - scrollDistance;
             
             // 确保滚动位置在有效范围内

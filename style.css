@@ -187,6 +187,51 @@ body {
     color: rgba(255, 255, 255, 0.7);
 }
 
+.road-limit {
+    font-size: 14px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 6px 12px;
+    border-radius: 8px;
+    color: white;
+    margin-top: 8px;
+}
+
+.limit-label {
+    margin-right: 8px;
+}
+
+.limit-value {
+    font-size: 18px;
+    color: #ff6b6b;
+    margin: 0 4px;
+}
+
+.limit-unit {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.current-location {
+    font-size: 12px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 5px 10px;
+    border-radius: 6px;
+    color: white;
+    margin-top: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.location-label {
+    margin-right: 6px;
+}
+
+.location-value {
+    font-size: 14px;
+    color: #667eea;
+}
+
 @keyframes pulse {
     0%, 100% { opacity: 0.5; }
     50% { opacity: 1; }

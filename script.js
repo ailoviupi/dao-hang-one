@@ -122,6 +122,12 @@ function updateLocation(position) {
     document.querySelector('.location-text').textContent = locationText;
     document.querySelector('.lat').textContent = `纬度: ${latitude.toFixed(6)}`;
     document.querySelector('.lon').textContent = `经度: ${longitude.toFixed(6)}`;
+    
+    // 更新地图上的当前位置显示
+    const currentLocationValue = document.getElementById('currentLocationValue');
+    if (currentLocationValue) {
+        currentLocationValue.textContent = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+    }
 }
 
 // 处理定位错误
@@ -160,6 +166,7 @@ function simulateSpeedUpdate() {
                 speed: currentSpeed / 3.6 // 转换为 m/s
             }
         };
+        updateLocation(mockPosition);
         updateDrivingStats(mockPosition);
     }
 }
@@ -667,6 +674,18 @@ function initMapSystem() {
     
     // 预加载地图
     preloadMaps();
+    
+    // 初始化地图信息显示
+    const roadLimitValue = document.getElementById('roadLimitValue');
+    const currentLocationValue = document.getElementById('currentLocationValue');
+    
+    if (roadLimitValue) {
+        roadLimitValue.textContent = roadSpeed.limit;
+    }
+    
+    if (currentLocationValue) {
+        currentLocationValue.textContent = '等待定位...';
+    }
 }
 
 function setMap(mapType) {
@@ -718,6 +737,8 @@ function updateRoadSpeed() {
     
     // 更新UI
     const roadSpeedValue = document.getElementById('roadSpeedValue');
+    const roadLimitValue = document.getElementById('roadLimitValue');
+    
     if (roadSpeedValue) {
         roadSpeedValue.textContent = roadSpeed.current;
         
@@ -731,6 +752,10 @@ function updateRoadSpeed() {
         } else {
             roadSpeedValue.style.color = '#667eea'; // 紫色 - 正常
         }
+    }
+    
+    if (roadLimitValue) {
+        roadLimitValue.textContent = roadSpeed.limit;
     }
 }
 

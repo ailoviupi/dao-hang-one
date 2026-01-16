@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能车辆导航</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部状态栏 -->
+        <div class="status-bar">
+            <div class="time">00:00</div>
+            <div class="status-icons">
+                <span class="signal">📶</span>
+                <span class="battery">🔋</span>
+            </div>
+        </div>
+
+        <!-- 导航主界面 -->
+        <div class="nav-main">
+            <!-- 地图区域 -->
+            <div class="map-container">
+                <div class="map-placeholder">
+                    <div class="map-loading">正在加载地图...</div>
+                </div>
+                
+                <!-- 实时位置信息 -->
+                <div class="location-info">
+                    <div class="current-location">
+                        <span class="location-icon">📍</span>
+                        <span class="location-text">获取位置中...</span>
+                    </div>
+                    <div class="coordinates">
+                        <span class="lat">纬度: --</span>
+                        <span class="lon">经度: --</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 车速显示 -->
+            <div class="speed-container">
+                <div class="speed-display">
+                    <span class="speed-value">0</span>
+                    <span class="speed-unit">km/h</span>
+                </div>
+                <div class="speed-label">当前时速</div>
+            </div>
+
+            <!-- 交通信息 -->
+            <div class="traffic-info">
+                <h3>交通状况</h3>
+                <div class="traffic-status">
+                    <div class="traffic-item">
+                        <span class="traffic-icon">🚦</span>
+                        <span class="traffic-text">前方路况: 畅通</span>
+                    </div>
+                    <div class="traffic-item">
+                        <span class="traffic-icon">⏱️</span>
+                        <span class="traffic-text">预计到达: --</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 导航控制 -->
+            <div class="nav-controls">
+                <button class="control-btn start-btn">开始导航</button>
+                <button class="control-btn settings-btn">设置</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

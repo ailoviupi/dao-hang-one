@@ -590,6 +590,9 @@ function initMapSystem() {
     
     // 检查地图可用性
     checkMapAvailability();
+    
+    // 预加载地图
+    preloadMaps();
 }
 
 function setMap(mapType) {
@@ -606,6 +609,11 @@ function setMap(mapType) {
     // 更新地图显示
     const mapImage = document.getElementById('mapImage');
     mapImage.className = `map-image ${mapType}`;
+    
+    // 设置背景图片
+    if (mapType !== 'amap') {
+        mapImage.style.backgroundImage = `url('https://picsum.photos/1920/1080?${mapType}')`;
+    }
     
     // 如果是高德地图，打开新窗口
     if (mapType === 'amap') {
@@ -624,6 +632,15 @@ function simulateMapLoad() {
     setTimeout(() => {
         showMessage('地图加载完成');
     }, 1500);
+}
+
+// 预加载地图
+function preloadMaps() {
+    const mapTypes = ['default', 'satellite', 'traffic', 'terrain'];
+    mapTypes.forEach(mapType => {
+        const img = new Image();
+        img.src = `https://picsum.photos/1920/1080?${mapType}`;
+    });
 }
 
 // 检查地图可用性

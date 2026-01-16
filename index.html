@@ -22,8 +22,22 @@
         <div class="nav-main">
             <!-- 地图区域 -->
             <div class="map-container">
-                <div class="map-placeholder">
-                    <div class="map-loading">正在加载地图...</div>
+                <!-- 地图切换器 -->
+                <div class="map-switcher">
+                    <button class="map-btn active" data-map="default">默认地图</button>
+                    <button class="map-btn" data-map="satellite">卫星地图</button>
+                    <button class="map-btn" data-map="traffic">交通地图</button>
+                    <button class="map-btn" data-map="terrain">地形地图</button>
+                </div>
+                
+                <!-- 地图容器 -->
+                <div class="map-content">
+                    <div class="map-image" id="mapImage">
+                        <div class="map-overlay">
+                            <div class="map-marker">📍</div>
+                            <div class="map-scale">比例尺: 1:100000</div>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- 实时位置信息 -->

@@ -45,6 +45,9 @@ window.addEventListener('DOMContentLoaded', () => {
     
     // 初始化离线地图
     initOfflineMap();
+    
+    // 初始化地图系统
+    initMapSystem();
 });
 
 // 更新时间
@@ -535,6 +538,54 @@ function cacheMap() {
         updateCacheStatus();
         showMessage(`地图缓存完成，大小: ${cacheSize}MB`);
     }, 2000);
+}
+
+// 地图系统功能
+let currentMap = 'default';
+
+function initMapSystem() {
+    // 从本地存储加载地图类型
+    const savedMap = localStorage.getItem('currentMap') || 'default';
+    setMap(savedMap);
+    
+    // 绑定地图按钮事件
+    document.querySelectorAll('.map-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const mapType = btn.dataset.map;
+            setMap(mapType);
+        });
+    });
+    
+    // 模拟地图加载
+    simulateMapLoad();
+}
+
+function setMap(mapType) {
+    currentMap = mapType;
+    
+    // 更新按钮状态
+    document.querySelectorAll('.map-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.map === mapType) {
+            btn.classList.add('active');
+        }
+    });
+    
+    // 更新地图显示
+    const mapImage = document.getElementById('mapImage');
+    mapImage.className = `map-image ${mapType}`;
+    
+    // 保存到本地存储
+    localStorage.setItem('currentMap', mapType);
+    
+    showMessage(`已切换到${mapType}地图`);
+}
+
+// 模拟地图加载完成
+function simulateMapLoad() {
+    setTimeout(() => {
+        showMessage('地图加载完成');
+    }, 1500);
 }
 
 // 手势操作

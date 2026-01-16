@@ -286,8 +286,37 @@ function showMessage(message) {
     document.body.appendChild(msg);
     
     setTimeout(() => {
-        document.body.removeChild(msg);
+        if (document.body.contains(msg)) {
+            document.body.removeChild(msg);
+        }
     }, 2000);
+}
+
+// 显示手势提示
+function showGestureHint(hint) {
+    // 创建手势提示
+    const hintEl = document.createElement('div');
+    hintEl.style.cssText = `
+        position: fixed;
+        top: 20%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 14px;
+        z-index: 999;
+        backdrop-filter: blur(10px);
+    `;
+    hintEl.textContent = hint;
+    document.body.appendChild(hintEl);
+    
+    setTimeout(() => {
+        if (document.body.contains(hintEl)) {
+            document.body.removeChild(hintEl);
+        }
+    }, 1500);
 }
 
 // 显示错误
@@ -639,12 +668,25 @@ document.addEventListener('touchend', (e) => {
     } else {
         // 垂直滑动
         if (deltaY > 50) {
-            // 向下滑动 - 显示更多信息
-            showMessage('向下滑动手势');
+            // 向下滑动 - 滚动到顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showMessage('向下滑动手势 - 滚动到顶部');
         } else if (deltaY < -50) {
-            // 向上滑动 - 隐藏信息
-            showMessage('向上滑动手势');
+            // 向上滑动 - 滚动到底部
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            showMessage('向上滑动手势 - 滚动到底部');
         }
+    }
+});
+
+// 鼠标滚轮事件
+document.addEventListener('wheel', (e) => {
+    if (e.deltaY > 0) {
+        // 向下滚动
+        showMessage('向下滚动');
+    } else {
+        // 向上滚动
+        showMessage('向上滚动');
     }
 });
 

@@ -50,16 +50,16 @@ body {
 
 /* 导航主界面 */
 .nav-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.6);
-    border-radius: 20px;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 0;
+    padding: 0;
+    max-width: 100%;
+    margin: 0;
+    box-shadow: none;
+    border: none;
+    height: 100vh;
+    overflow-y: auto;
 }
 
 /* 地图区域 */
@@ -139,10 +139,6 @@ body {
 
 .map-image.terrain {
     background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
-}
-
-.map-image.amap {
-    background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
 }
 
 .map-image.baidu {
@@ -289,13 +285,13 @@ body {
 
 /* 车速显示 */
 .speed-container {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 30px;
-    margin-bottom: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 0;
+    padding: 20px;
+    margin-bottom: 0;
     text-align: center;
     backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    border: none;
 }
 
 .speed-display {
@@ -303,10 +299,10 @@ body {
     font-weight: 700;
     text-align: center;
     margin: 20px 0;
-    padding: 30px;
+    padding: 20px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 25px;
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+    border-radius: 0;
+    box-shadow: none;
     text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
 }
 
@@ -393,11 +389,11 @@ body {
 /* 移动端适配 */
 @media (max-width: 480px) {
     .nav-main {
-        padding: 15px;
+        padding: 0;
         max-width: 100%;
         margin: 0;
         border-radius: 0;
-        height: calc(100vh - 40px);
+        height: 100vh;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch; /* 优化iOS滚动体验 */
     }

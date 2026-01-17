@@ -43,6 +43,7 @@ window.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.start-btn').addEventListener('click', toggleNavigation);
     document.querySelector('.settings-btn').addEventListener('click', openSettings);
     document.querySelector('.navigate-btn').addEventListener('click', openNavigationDialog);
+    document.querySelector('.emergency-btn').addEventListener('click', emergencyHelp);
     
     // 初始化收藏地点
     initFavorites();
@@ -60,6 +61,30 @@ window.addEventListener('DOMContentLoaded', () => {
     initMapSystem();
 });
 
+// 紧急求助
+function emergencyHelp() {
+    showMessage('紧急求助已触发，正在联系救援...');
+    
+    // 语音提示紧急求助
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance('紧急求助已触发，正在联系救援');
+        utterance.lang = 'zh-CN';
+        window.speechSynthesis.speak(utterance);
+    }
+    
+    // 模拟紧急求助过程
+    setTimeout(() => {
+        showMessage('救援已联系，预计5分钟到达');
+        
+        // 语音提示救援已联系
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance('救援已联系，预计5分钟到达');
+            utterance.lang = 'zh-CN';
+            window.speechSynthesis.speak(utterance);
+        }
+    }, 3000);
+}
+
 // 打开导航对话框
 function openNavigationDialog() {
     const destination = prompt('请输入目的地:');
@@ -72,9 +97,23 @@ function openNavigationDialog() {
 function navigateTo(destination) {
     showMessage(`开始导航到: ${destination}`);
     
+    // 语音提示开始导航
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(`开始导航到 ${destination}`);
+        utterance.lang = 'zh-CN';
+        window.speechSynthesis.speak(utterance);
+    }
+    
     // 模拟导航过程
     setTimeout(() => {
         showMessage(`已到达目的地: ${destination}`);
+        
+        // 语音提示到达目的地
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(`已到达目的地 ${destination}`);
+            utterance.lang = 'zh-CN';
+            window.speechSynthesis.speak(utterance);
+        }
     }, 5000);
 }
 
@@ -823,11 +862,8 @@ function setMap(mapType) {
         mapImage.style.backgroundImage = `url('https://picsum.photos/1920/1080?${mapType}')`;
     }
     
-    // 如果是高德地图，打开新窗口
-    if (mapType === 'amap') {
-        window.open('https://www.amap.com/', '_blank');
-        showMessage('已打开高德地图');
-    } else if (mapType === 'baidu') {
+    // 如果是百度地图，打开新窗口
+    if (mapType === 'baidu') {
         window.open('https://map.baidu.com/', '_blank');
         showMessage('已打开百度地图');
     } else if (mapType === 'tencent') {

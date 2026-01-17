@@ -95,8 +95,25 @@ function getCurrentLocation() {
     // 单次定位
     navigator.geolocation.getCurrentPosition(
         position => updateLocation(position),
-        error => handleLocationError(error)
+        error => {
+            handleLocationError(error);
+            // 定位失败时使用模拟位置
+            useMockLocation();
+        }
     );
+}
+
+// 使用模拟位置
+function useMockLocation() {
+    showMessage('使用模拟位置');
+    const mockPosition = {
+        coords: {
+            latitude: 39.9042,
+            longitude: 116.4074,
+            speed: 0
+        }
+    };
+    updateLocation(mockPosition);
 }
 
 // 开始位置监听
@@ -288,13 +305,6 @@ function updateSpeedDisplay() {
         speedElement.style.color = '#ffd93d';
     } else {
         speedElement.style.color = '#6bcf7f';
-    }
-    
-    // 语音提示当前车速
-    if (isNavigating && 'speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(`当前车速 ${currentSpeed} 公里每小时`);
-        utterance.lang = 'zh-CN';
-        window.speechSynthesis.speak(utterance);
     }
 }
 
@@ -891,10 +901,13 @@ function updateRoadSpeed() {
             }
             
             // 语音提示当前路段速度和限速
-            if (isNavigating && 'speechSynthesis' in window) {
+            // 添加30秒冷却避免频繁播报
+            const now = Date.now();
+            if (isNavigating && 'speechSynthesis' in window && (!window.lastRoadSpeedSpeakTime || now - window.lastRoadSpeedSpeakTime > 30000)) {
                 const utterance = new SpeechSynthesisUtterance(`当前路段速度 ${roadSpeed.current} 公里每小时，限速 ${roadSpeed.limit} 公里每小时`);
                 utterance.lang = 'zh-CN';
                 window.speechSynthesis.speak(utterance);
+                window.lastRoadSpeedSpeakTime = now;
             }
         })
         .catch(error => {

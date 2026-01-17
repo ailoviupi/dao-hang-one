@@ -802,6 +802,10 @@ document.addEventListener('touchstart', (e) => {
     touchStartY = e.touches[0].clientY;
 });
 
+// 手势提示冷却控制
+let lastGestureHintTime = 0;
+const GESTURE_HINT_COOLDOWN = 5000;
+
 // 触摸结束
 document.addEventListener('touchend', (e) => {
     const touchEndX = e.changedTouches[0].clientX;
@@ -809,6 +813,7 @@ document.addEventListener('touchend', (e) => {
     
     const deltaX = touchEndX - touchStartX;
     const deltaY = touchEndY - touchStartY;
+    const currentTime = Date.now();
     
     // 检测滑动手势
     if (Math.abs(deltaX) > Math.abs(deltaY)) {
@@ -816,17 +821,25 @@ document.addEventListener('touchend', (e) => {
         if (deltaX > 30) {
             // 向右滑动 - 返回上一页
             window.history.back();
-            showGestureHint('向右滑动: 返回上一页');
+            // 仅在冷却时间过后显示提示
+            if (currentTime - lastGestureHintTime > GESTURE_HINT_COOLDOWN) {
+                showGestureHint('向右滑动: 返回上一页');
+                lastGestureHintTime = currentTime;
+            }
         } else if (deltaX < -30) {
             // 向左滑动 - 前进
             window.history.forward();
-            showGestureHint('向左滑动: 前进到下一页');
+            // 仅在冷却时间过后显示提示
+            if (currentTime - lastGestureHintTime > GESTURE_HINT_COOLDOWN) {
+                showGestureHint('向左滑动: 前进到下一页');
+                lastGestureHintTime = currentTime;
+            }
         }
     } else {
         // 垂直滑动
         if (Math.abs(deltaY) > 30) {
             // 根据滑动方向和距离计算滚动目标位置
-            const scrollDistance = deltaY * 2;
+            const scrollDistance = deltaY * 1.8;
             const targetPosition = window.scrollY - scrollDistance;
             
             // 确保滚动位置在有效范围内

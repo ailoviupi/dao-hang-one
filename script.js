@@ -42,6 +42,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // 绑定按钮事件
     document.querySelector('.start-btn').addEventListener('click', toggleNavigation);
     document.querySelector('.settings-btn').addEventListener('click', openSettings);
+    document.querySelector('.navigate-btn').addEventListener('click', openNavigationDialog);
     
     // 初始化收藏地点
     initFavorites();
@@ -58,6 +59,24 @@ window.addEventListener('DOMContentLoaded', () => {
     // 初始化地图系统
     initMapSystem();
 });
+
+// 打开导航对话框
+function openNavigationDialog() {
+    const destination = prompt('请输入目的地:');
+    if (destination) {
+        navigateTo(destination);
+    }
+}
+
+// 导航到目的地
+function navigateTo(destination) {
+    showMessage(`开始导航到: ${destination}`);
+    
+    // 模拟导航过程
+    setTimeout(() => {
+        showMessage(`已到达目的地: ${destination}`);
+    }, 5000);
+}
 
 // 更新时间
 function updateTime() {
@@ -150,6 +169,18 @@ function calculateSpeed(position) {
     
     // 更新驾驶统计
     updateDrivingStats(position);
+    
+    // 检查是否超速
+    if (currentSpeed > roadSpeed.limit) {
+        showMessage(`超速警告！当前车速 ${currentSpeed}km/h，限速 ${roadSpeed.limit}km/h`);
+        
+        // 语音提示超速
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(`超速警告！当前车速 ${currentSpeed} 公里每小时，限速 ${roadSpeed.limit} 公里每小时`);
+            utterance.lang = 'zh-CN';
+            window.speechSynthesis.speak(utterance);
+        }
+    }
 }
 
 // 模拟车速更新（用于测试）
@@ -257,6 +288,13 @@ function updateSpeedDisplay() {
         speedElement.style.color = '#ffd93d';
     } else {
         speedElement.style.color = '#6bcf7f';
+    }
+    
+    // 语音提示当前车速
+    if (isNavigating && 'speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(`当前车速 ${currentSpeed} 公里每小时`);
+        utterance.lang = 'zh-CN';
+        window.speechSynthesis.speak(utterance);
     }
 }
 
@@ -645,6 +683,30 @@ function initOfflineMap() {
     
     // 更新缓存状态
     updateCacheStatus();
+    
+    // 检查是否有离线地图缓存
+    checkOfflineMapCache();
+}
+
+// 检查离线地图缓存
+function checkOfflineMapCache() {
+    const cacheSize = localStorage.getItem('mapCacheSize') || 0;
+    if (cacheSize > 0) {
+        showMessage(`检测到离线地图缓存，大小: ${cacheSize}MB`);
+    }
+}
+
+// 离线模式下使用缓存地图
+function useOfflineMap() {
+    if (!navigator.onLine) {
+        showMessage('离线模式，使用缓存地图');
+        // 加载缓存地图
+        const cachedMap = localStorage.getItem('cachedMap');
+        if (cachedMap) {
+            const mapImage = document.getElementById('mapImage');
+            mapImage.src = cachedMap;
+        }
+    }
 }
 
 function checkNetworkStatus() {
@@ -681,6 +743,13 @@ function cacheMap() {
     setTimeout(() => {
         const cacheSize = Math.floor(Math.random() * 100) + 50; // 50-150MB
         localStorage.setItem('mapCacheSize', cacheSize);
+        
+        // 缓存当前地图
+        const mapImage = document.getElementById('mapImage');
+        if (mapImage) {
+            localStorage.setItem('cachedMap', mapImage.style.backgroundImage);
+        }
+        
         updateCacheStatus();
         showMessage(`地图缓存完成，大小: ${cacheSize}MB`);
     }, 2000);
@@ -748,6 +817,12 @@ function setMap(mapType) {
     if (mapType === 'amap') {
         window.open('https://www.amap.com/', '_blank');
         showMessage('已打开高德地图');
+    } else if (mapType === 'baidu') {
+        window.open('https://map.baidu.com/', '_blank');
+        showMessage('已打开百度地图');
+    } else if (mapType === 'tencent') {
+        window.open('https://map.qq.com/', '_blank');
+        showMessage('已打开腾讯地图');
     } else {
         showMessage(`已切换到${mapType}地图`);
     }
@@ -777,34 +852,104 @@ function simulateMapLoad() {
 
 // 更新路段速度
 function updateRoadSpeed() {
-    // 模拟获取路段速度
-    const speeds = [30, 40, 50, 60, 70, 80, 90, 100];
-    roadSpeed.current = speeds[Math.floor(Math.random() * speeds.length)];
-    roadSpeed.limit = 60 + Math.floor(Math.random() * 40);
-    roadSpeed.traffic = ['normal', 'slow', 'heavy', 'jam'][Math.floor(Math.random() * 4)];
-    
-    // 更新UI
-    const roadSpeedValue = document.getElementById('roadSpeedValue');
-    const roadLimitValue = document.getElementById('roadLimitValue');
-    
-    if (roadSpeedValue) {
-        roadSpeedValue.textContent = roadSpeed.current;
-        
-        // 根据交通状况改变颜色
-        if (roadSpeed.traffic === 'jam') {
-            roadSpeedValue.style.color = '#ff6b6b'; // 红色 - 严重拥堵
-        } else if (roadSpeed.traffic === 'heavy') {
-            roadSpeedValue.style.color = '#ffd93d'; // 黄色 - 拥堵
-        } else if (roadSpeed.traffic === 'slow') {
-            roadSpeedValue.style.color = '#6bcf7f'; // 绿色 - 缓慢
-        } else {
-            roadSpeedValue.style.color = '#667eea'; // 紫色 - 正常
-        }
-    }
-    
-    if (roadLimitValue) {
-        roadLimitValue.textContent = roadSpeed.limit;
-    }
+    // 尝试从真实API获取路段速度
+    fetchRoadSpeedFromAPI()
+        .then(data => {
+            if (data) {
+                roadSpeed.current = data.currentSpeed;
+                roadSpeed.limit = data.limit;
+                roadSpeed.traffic = data.traffic;
+            } else {
+                // 如果API调用失败，使用模拟数据
+                const speeds = [30, 40, 50, 60, 70, 80, 90, 100];
+                roadSpeed.current = speeds[Math.floor(Math.random() * speeds.length)];
+                roadSpeed.limit = 60 + Math.floor(Math.random() * 40);
+                roadSpeed.traffic = ['normal', 'slow', 'heavy', 'jam'][Math.floor(Math.random() * 4)];
+            }
+            
+            // 更新UI
+            const roadSpeedValue = document.getElementById('roadSpeedValue');
+            const roadLimitValue = document.getElementById('roadLimitValue');
+            
+            if (roadSpeedValue) {
+                roadSpeedValue.textContent = roadSpeed.current;
+                
+                // 根据交通状况改变颜色
+                if (roadSpeed.traffic === 'jam') {
+                    roadSpeedValue.style.color = '#ff6b6b'; // 红色 - 严重拥堵
+                } else if (roadSpeed.traffic === 'heavy') {
+                    roadSpeedValue.style.color = '#ffd93d'; // 黄色 - 拥堵
+                } else if (roadSpeed.traffic === 'slow') {
+                    roadSpeedValue.style.color = '#6bcf7f'; // 绿色 - 缓慢
+                } else {
+                    roadSpeedValue.style.color = '#667eea'; // 紫色 - 正常
+                }
+            }
+            
+            if (roadLimitValue) {
+                roadLimitValue.textContent = roadSpeed.limit;
+            }
+            
+            // 语音提示当前路段速度和限速
+            if (isNavigating && 'speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(`当前路段速度 ${roadSpeed.current} 公里每小时，限速 ${roadSpeed.limit} 公里每小时`);
+                utterance.lang = 'zh-CN';
+                window.speechSynthesis.speak(utterance);
+            }
+        })
+        .catch(error => {
+            console.error('获取路段速度失败:', error);
+            // 使用模拟数据
+            const speeds = [30, 40, 50, 60, 70, 80, 90, 100];
+            roadSpeed.current = speeds[Math.floor(Math.random() * speeds.length)];
+            roadSpeed.limit = 60 + Math.floor(Math.random() * 40);
+            roadSpeed.traffic = ['normal', 'slow', 'heavy', 'jam'][Math.floor(Math.random() * 4)];
+            
+            // 更新UI
+            const roadSpeedValue = document.getElementById('roadSpeedValue');
+            const roadLimitValue = document.getElementById('roadLimitValue');
+            
+            if (roadSpeedValue) {
+                roadSpeedValue.textContent = roadSpeed.current;
+                
+                // 根据交通状况改变颜色
+                if (roadSpeed.traffic === 'jam') {
+                    roadSpeedValue.style.color = '#ff6b6b'; // 红色 - 严重拥堵
+                } else if (roadSpeed.traffic === 'heavy') {
+                    roadSpeedValue.style.color = '#ffd93d'; // 黄色 - 拥堵
+                } else if (roadSpeed.traffic === 'slow') {
+                    roadSpeedValue.style.color = '#6bcf7f'; // 绿色 - 缓慢
+                } else {
+                    roadSpeedValue.style.color = '#667eea'; // 紫色 - 正常
+                }
+            }
+            
+            if (roadLimitValue) {
+                roadLimitValue.textContent = roadSpeed.limit;
+            }
+        });
+}
+
+// 从API获取路段速度
+function fetchRoadSpeedFromAPI() {
+    return new Promise((resolve, reject) => {
+        // 模拟API调用
+        setTimeout(() => {
+            // 70%的概率返回真实数据，30%的概率返回null
+            const isSuccess = Math.random() > 0.3;
+            if (isSuccess) {
+                const speeds = [30, 40, 50, 60, 70, 80, 90, 100];
+                const trafficStatus = ['normal', 'slow', 'heavy', 'jam'];
+                resolve({
+                    currentSpeed: speeds[Math.floor(Math.random() * speeds.length)],
+                    limit: 60 + Math.floor(Math.random() * 40),
+                    traffic: trafficStatus[Math.floor(Math.random() * trafficStatus.length)]
+                });
+            } else {
+                resolve(null);
+            }
+        }, 1000);
+    });
 }
 
 // 定期更新路段速度

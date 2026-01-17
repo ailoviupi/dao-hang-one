@@ -86,20 +86,7 @@ body {
     flex-wrap: wrap;
 }
 
-/* 移动端适配 */
-@media (max-width: 480px) {
-    .map-switcher {
-        top: 10px;
-        left: 10px;
-        right: 10px;
-        gap: 5px;
-    }
-    
-    .map-btn {
-        padding: 8px 12px;
-        font-size: 10px;
-    }
-}
+
 
 .map-btn {
     background: rgba(0, 0, 0, 0.6);
@@ -155,6 +142,14 @@ body {
 }
 
 .map-image.amap {
+    background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
+}
+
+.map-image.baidu {
+    background: linear-gradient(135deg, #3385ff 0%, #0066cc 100%);
+}
+
+.map-image.tencent {
     background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
 }
 
@@ -399,15 +394,23 @@ body {
 @media (max-width: 480px) {
     .nav-main {
         padding: 15px;
+        max-width: 100%;
+        margin: 0;
+        border-radius: 0;
+        height: calc(100vh - 40px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch; /* 优化iOS滚动体验 */
     }
     
     .speed-display {
         font-size: 48px;
+        padding: 20px;
     }
     
     .control-btn {
         padding: 15px;
         font-size: 14px;
+        font-weight: 600;
     }
     
     /* 移动端地图信息 */
@@ -417,6 +420,9 @@ body {
         font-size: 12px;
         padding: 6px 12px;
         margin-bottom: 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
     .speed-value,
@@ -435,11 +441,13 @@ body {
         left: 10px;
         right: 10px;
         gap: 5px;
+        flex-wrap: wrap;
     }
     
     .map-btn {
         padding: 8px 12px;
         font-size: 10px;
+        font-weight: 500;
     }
     
     /* 移动端地图内容 */
@@ -462,25 +470,45 @@ body {
     /* 移动端主题按钮 */
     .theme-buttons {
         gap: 5px;
+        flex-wrap: wrap;
     }
     
     .theme-btn {
         padding: 8px 15px;
         font-size: 12px;
+        font-weight: 500;
     }
     
     /* 移动端收藏地点 */
     .favorite-item {
         padding: 12px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
     }
     
     .favorite-name {
         font-size: 14px;
+        font-weight: 500;
+        flex: 1;
+        margin-left: 10px;
+    }
+    
+    .favorite-actions {
+        display: flex;
+        gap: 5px;
     }
     
     .navigate-btn {
         padding: 6px 12px;
         font-size: 10px;
+        font-weight: 500;
+    }
+    
+    .delete-btn {
+        padding: 6px 12px;
+        font-size: 10px;
+        font-weight: 500;
     }
     
     /* 移动端离线地图 */
@@ -494,6 +522,59 @@ body {
     
     .status-text {
         font-size: 12px;
+        font-weight: 500;
+    }
+    
+    /* 移动端优化 */
+    .map-container {
+        margin-bottom: 15px;
+        border-radius: 15px;
+    }
+    
+    .speed-container {
+        margin-bottom: 15px;
+        border-radius: 15px;
+        padding: 20px;
+    }
+    
+    .traffic-info {
+        margin-bottom: 15px;
+        border-radius: 15px;
+        padding: 15px;
+    }
+    
+    .favorites {
+        margin-bottom: 15px;
+        border-radius: 15px;
+        padding: 15px;
+    }
+    
+    .stats-container {
+        margin-bottom: 15px;
+        border-radius: 15px;
+        padding: 15px;
+    }
+    
+    .theme-selector {
+        margin-bottom: 15px;
+        border-radius: 15px;
+        padding: 15px;
+    }
+    
+    .achievements {
+        margin-bottom: 15px;
+        border-radius: 15px;
+        padding: 15px;
+    }
+    
+    .offline-map {
+        margin-bottom: 15px;
+        border-radius: 15px;
+        padding: 15px;
+    }
+    
+    .nav-controls {
+        gap: 10px;
     }
 }
 
@@ -622,6 +703,12 @@ body {
     border-radius: 10px;
     text-align: center;
     backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+    background: rgba(0, 0, 0, 0.5);
+    transform: translateY(-2px);
 }
 
 .stat-value {
@@ -629,6 +716,11 @@ body {
     font-weight: 700;
     margin-bottom: 5px;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover .stat-value {
+    transform: scale(1.1);
 }
 
 .stat-label {
@@ -689,6 +781,14 @@ body.theme-nature {
 
 body.theme-cyber {
     background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+}
+
+body.theme-sunset {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ffa737 100%);
+}
+
+body.theme-ocean {
+    background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
 }
 
 /* 驾驶成就 */

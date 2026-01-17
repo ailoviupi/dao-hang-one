@@ -26,7 +26,9 @@ let achievements = {
     firstDrive: { unlocked: false, description: '完成首次驾驶' },
     speedDemon: { unlocked: false, description: '时速超过100km/h' },
     longDrive: { unlocked: false, description: '行驶超过100km' },
-    safeDriver: { unlocked: false, description: '连续驾驶1小时无超速' }
+    safeDriver: { unlocked: false, description: '连续驾驶1小时无超速' },
+    dailyDriver: { unlocked: false, description: '连续7天驾驶' },
+    perfectDriver: { unlocked: false, description: '累计安全驾驶10小时' }
 };
 
 // 页面加载完成后初始化
@@ -235,6 +237,12 @@ function updateStatsUI() {
     document.getElementById('totalDistance').textContent = drivingStats.totalDistance.toFixed(1);
     document.getElementById('avgSpeed').textContent = Math.round(drivingStats.avgSpeed);
     document.getElementById('drivingTime').textContent = drivingStats.drivingTime.toFixed(1);
+    
+    // 显示最大车速
+    const maxSpeedElement = document.getElementById('maxSpeed');
+    if (maxSpeedElement) {
+        maxSpeedElement.textContent = drivingStats.maxSpeed;
+    }
 }
 
 // 更新车速显示
@@ -442,7 +450,10 @@ function renderFavorites() {
         item.innerHTML = `
             <span class="favorite-icon">${favorite.icon}</span>
             <span class="favorite-name">${favorite.name}</span>
-            <button class="navigate-btn" onclick="navigateToFavorite(${index})">导航</button>
+            <div class="favorite-actions">
+                <button class="navigate-btn" onclick="navigateToFavorite(${index})">导航</button>
+                <button class="delete-btn" onclick="deleteFavorite(${index})">删除</button>
+            </div>
         `;
         favoritesList.appendChild(item);
     });
@@ -488,6 +499,17 @@ function addFavorite() {
             showMessage(`已添加收藏地点: ${name}`);
         }
     );
+}
+
+// 删除收藏地点
+function deleteFavorite(index) {
+    const favorite = favorites[index];
+    if (confirm(`确定要删除收藏地点: ${favorite.name}?`)) {
+        favorites.splice(index, 1);
+        saveFavorites();
+        renderFavorites();
+        showMessage(`已删除收藏地点: ${favorite.name}`);
+    }
 }
 
 function saveFavorites() {
@@ -582,6 +604,17 @@ function checkAchievements() {
     // 检查安全驾驶成就
     if (!achievements.safeDriver.unlocked && drivingStats.drivingTime >= 1) {
         unlockAchievement('safeDriver');
+    }
+    
+    // 检查每日驾驶成就
+    if (!achievements.dailyDriver.unlocked) {
+        // 模拟连续7天驾驶
+        unlockAchievement('dailyDriver');
+    }
+    
+    // 检查完美驾驶成就
+    if (!achievements.perfectDriver.unlocked && drivingStats.drivingTime >= 10) {
+        unlockAchievement('perfectDriver');
     }
 }
 
@@ -727,6 +760,18 @@ function setMap(mapType) {
 function simulateMapLoad() {
     setTimeout(() => {
         showMessage('地图加载完成');
+        
+        // 显示地图信息
+        const roadLimitValue = document.getElementById('roadLimitValue');
+        const currentLocationValue = document.getElementById('currentLocationValue');
+        
+        if (roadLimitValue) {
+            roadLimitValue.textContent = roadSpeed.limit;
+        }
+        
+        if (currentLocationValue) {
+            currentLocationValue.textContent = '已获取位置';
+        }
     }, 1500);
 }
 
@@ -777,6 +822,9 @@ function preloadMaps() {
         mapTypes.forEach(mapType => {
             const img = new Image();
             img.src = `https://picsum.photos/1920/1080?${mapType}`;
+            img.onload = () => {
+                console.log(`预加载完成: ${mapType} 地图`);
+            };
         });
     }, 1000);
 }
@@ -788,6 +836,11 @@ function checkMapAvailability() {
         const isAvailable = Math.random() > 0.3; // 70%可用
         if (!isAvailable) {
             showMessage('当前地图服务不可用，建议切换到高德地图');
+            
+            // 自动切换到高德地图
+            setTimeout(() => {
+                setMap('amap');
+            }, 3000);
         }
     }, 2000);
 }
